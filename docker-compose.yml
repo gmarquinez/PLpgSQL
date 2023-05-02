@@ -1,0 +1,43 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    container_name: postgresql-data
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./db/01_create_tables.sql:/docker-entrypoint-initdb.d/01_create_tables.sql
+      - ./db/02_fill_tables.sql:/docker-entrypoint-initdb.d/02_fill_tables.sql
+
+
+      #function
+      - ./db/03_function.sql:/docker-entrypoint-initdb.d/03_function.sql
+
+      #procedure
+      - ./db/04_procedure.sql:/docker-entrypoint-initdb.d/04_procedure.sql
+
+      #cursor
+      - ./db/05_cursor.sql:/docker-entrypoint-initdb.d/05_cursor.sql
+
+      #trigger
+      - ./db/06_trigger.sql:/docker-entrypoint-initdb.d/06_trigger.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@domain.com
+      PGADMIN_DEFAULT_PASSWORD: SuperSecret
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db
+
+volumes:
+  pgadmin-data:
