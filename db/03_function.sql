@@ -1,22 +1,18 @@
-CREATE OR REPLACE FUNCTION obtener_libros_prestados_por_persona(
-    p_nombre_persona TEXT,
-    p_apellido_persona TEXT,
-    p_nif_persona TEXT
-) RETURNS TABLE (
-    titulo TEXT,
-    autor TEXT,
-    editorial TEXT,
-    fecha_prestamo TIMESTAMP,
-    fecha_devolucion TIMESTAMP,
-    biblioteca TEXT
-) AS $$
+CREATE OR REPLACE FUNCTION libros_disponibles(p_id_biblioteca INT)
+RETURNS INT AS $$
+DECLARE
+    total_disponibles INT;
 BEGIN
-    RETURN QUERY
-    SELECT l.titulo, l.autor, l.editorial, lp.fecha_prestamo, lp.fecha_devolucion, b.nombre AS biblioteca
-    FROM libros l
-    INNER JOIN libros_prestados lp ON lp.id_libro = l.id
-    INNER JOIN personas p ON p.id = lp.id_persona
-    INNER JOIN biblioteca b ON b.id = p.id_biblioteca
-    WHERE p.nombre = p_nombre_persona AND p.apellido = p_apellido_persona AND p.nif = p_nif_persona;
+    SELECT COUNT(*)
+    INTO total_disponibles
+    FROM libros
+    WHERE id_biblioteca = p_id_biblioteca AND numcopiasdisponibles > 0;
+
+    RETURN total_disponibles;
 END;
 $$ LANGUAGE plpgsql;
+
+
+SELECT libros_disponibles(1);  
+-- Cambia este número por el ID de la biblioteca que te interese.
+
